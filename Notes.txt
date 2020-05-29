@@ -1,0 +1,337 @@
+Node.js & Express From Scratch
+-- Traversy Media (series of 12)
+https://www.youtube.com/watch?v=k_0ZzvHbNBQ&list=PLillGF-RfqbYRpji8t4SxUkMxfowG4Kqp
+Project Name: nodekb
+
+=====================
+Node.js & Express From Scratch [Part 1] - Intro & Environment
+=====================
+# About This Series
+. Beginner friendly
+. Suggested prerequisites
+. . Node.js for Beginners
+. . MongoDB in 30 Minutes
+. . ExpressJS Crash Course
+Full CRUD functionality (Article Knowledgebase)
+
+# Technologies
+. Node.js & NPM
+. Express Framework
+. MongoDB Database
+. Mongoose ORM (Object Relational Manager)
+. Pug Template Engine
+. Bower Package Manager
+. Twitter Bootstrap
+. jQuery & Ajax
+
+# First
+Install NodeJS
+Install MongoDB
+  Customized install; path C:\mongodb
+Using Atom (editor)
+Install Git
+Using GitBash (for Windows)
+
+C:\> cd c:\mongodb\bin
+C:\> mongodb --directoryperdb --dbpath C:\mongodb\data\dbpath --logpath c:\mongodb\log\mongo.log --logappend --rest --install
+C:\> net start mongodb
+
+$ node -v
+v6.10.3
+$ npm -v
+3.10.10
+
+=====================
+Node.js & ExpressJS From Scratch [Part 2] - App Setup & Express Install
+=====================
+The app will be a Node Knowledgebase.
+In shell, change to project directory.
+$ npm init      # Create package.json file
+$ atom .        # Opens atom using pwd as the folder to edit
+Add start script to package.json .
+$ npm install --save-prod express      # install ExpressJS
+Setup listener in app.js then
+$ npm start
+(Windows will ask for firewall access permission)
+http:\\localhost:3000\
+(To see hello world message)
+
+=====================
+Node.js & ExpressJS From Scratch [Part 3] - Pug Template Engine
+=====================
+Pug is formerly known as Jade.
+Instead of using HTML tags, it uses indentation.
+$ npm install --save-prod pug
+(NOTE: to try to clear warnings I did this:
+$ npm install --save-prod constantinople@4.0.1
+It looks like pug is not well maintained.
+Pug dependencies need to be updated.
+)
+$ npm install --save-dev nodemon      # development dependency
+Add dev script to package.json .
+$ npm run dev
+Created views with pug
+
+=====================
+Node.js & ExpressJS From Scratch [Part 4] - Mongoose & Model Setup
+=====================
+Trying out MongoDB shell in the command shell.
+C:\> cd \mongodb\bin
+C:\> mongo
+> cls
+> show dbs
+> use nodekb
+> db.createCollection('articles');
+> show collections
+> db.articles.insert({title:"Article One",author:"BT",body:"This is article one"});
+> db.articles.find();
+> db.articles.insert({title:"Article Two",author:"JT",body:"This is article Two"});
+> db.articles.find();
+> db.articles.find().pretty();
+> 
+$ npm install --save-prod mongoose
+
+=====================
+Node.js & ExpressJS From Scratch [Part 5] - Save Articles to MongoDB
+=====================
+$ npm install --save-prod body-parser
+Make http://localhost:3000/articles/add work correctly
+
+=====================
+Node.js & ExpressJS From Scratch [Part 6] - Bower & Bootstrap
+=====================
+$ npm install --save-prod bower
+$ bower install bootstrap             # new version of Bootstrap without jQuery
+$ bower uninstall bootstrap --save
+$ bower install bootstrap#3.3.7
+
+=====================
+Node.js & ExpressJS From Scratch [Part 7] - Update & Delete Articles
+=====================
+Must use Ajax for DELETE because with a form you can only do GET and POST.
+We are using jQuery and Ajax.
+
+=====================
+Node.js & ExpressJS From Scratch [Part 8] - Messaging & Validation
+=====================
+Express Messages
+Connect-Flash : a dependency for Express Messages
+  (handles storing those messages)
+Express Session : a dependency for Express Messages
+  (handles sesssions in Express)
+Express-Validator :
+  (gets the messages to the client side)
+$ npm install --save-prod express-messages express-session connect-flash express-validator
+"express-validator": "^6.5.0" == newest version gives error:
+---------------------------------
+app.use(expressValidator({
+        ^
+
+TypeError: expressValidator is not a function
+---------------------------------
+This was a breaking change from version 5 to 6.
+
+
+Haziq Fiqri said 7 months ago:
+---------------------------------
+npm install --save express-validator@4, should work with above tutorial.
+---------------------------------
+
+
+ccrt1234 said 2 years ago:
+---------------------------------
+The express-validator has updated and the middleware is no longer required. 
+Someone ask for the new set-up, so here it is.
+In this add-post method I use the last version of express-validator( and ES6 )
+
+ //function(arg){ }  <=> (arg)=>{ }     this is a ES6 feature
+//
+
+const { check, validationResult } = require('express-validator/check');
+const { matchedData, sanitize } = require('express-validator/filter');       //you don't need this in this example
+
+
+
+//no middleware
+
+app.post('/articles/add',
+ [
+  check('title').isLength({min:1}).trim().withMessage('Title required'),
+  check('author').isLength({min:1}).trim().withMessage('Author required'),
+  check('body').isLength({min:1}).trim().withMessage('Body required')
+ ],
+  (req,res,next)=>{
+
+  let article = new Article({
+  title:req.body.title,
+  author:req.body.author,
+  body:req.body.body
+ });
+
+ const errors = validationResult(req);
+
+ if (!errors.isEmpty()) {
+  console.log(errors);
+     res.render('add_article',
+      { 
+       article:article,
+       errors: errors.mapped()
+      });
+   }
+   else{
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+
+  article.save(err=>{
+   if(err)throw err;
+   req.flash('success','Article Added');
+   res.redirect('/');
+  });
+ }
+});
+
+
+
+The edit method is similar.
+---------------------------------
+
+using code from ccrt1234 gives errors:
+---------------------------------
+express-validator: requires to express-validator/check are deprecated.You should just use require("express-validator") instead.
+express-validator: requires to express-validator/filter are deprecated.You should just use require("express-validator") instead.
+---------------------------------
+
+=====================
+Node.js & ExpressJS From Scratch [Part 9] - User Registration
+=====================
+We will be using Passport with local strategy (username and password will
+be stored in the database.) Could alternately use Facebook strategy, Twitter,
+or web tokens (such as JWT [Json Web Tokens] like in the "MEAN Stack Front
+To Back" series to make a request to the API then return an access key for
+authentication.) There was an older series he did (NodeJS Login System?)
+and this will be an improvement on that.
+
+We will be using BCryptJS to hash passwords because it is lighter JS only
+implementation without weird dependencies.
+
+$ npm install --save-prod passport passport-local bcryptjs
+
+After all the crap to get it working....
+Remove the extra users created during debugging.
+C:\> cd \mongodb\bin
+C:\> mongo
+> use nodekb
+> db.users.find();
+> db.users.remove({_id:ObjectId("592...0d1")});
+> db.users.find();
+> 
+
+=====================
+Node.js & ExpressJS From Scratch [Part 10] - User Login
+=====================
+Created login stuff with Passport.
+
+=====================
+Node.js & ExpressJS From Scratch [Part 11] - Access Control
+=====================
+
+=====================
+Node.js & ExpressJS From Scratch [Part 12] - Deploying Our App
+=====================
+Brad deploys onto Digital Ocean.
+He uses a test account, creates a Droplet (a VPS).
+Uses  Ubuntu  lowest $5 per month "more than enough for testing
+and prototyping. If you are running a production application
+then you may want to add more resources and go a little higher."
+"We want to add an SSH key. ...  I would suggest SSHing into it
+instead of using a login/password. You can actually disable
+login functionality so that only your machine can tunnel into
+your SSH."
+Using PuTTY (SSH and Telnet client).
+Using puttygen (RSA and DSA key generation utility).
+He puts these two executables into C:\putty\ .
+Run puttygen first.
+. Click generate and randomly move mouse around.
+Copy the new key and paste it into Digital Ocean.
+In puttygen save the key and the private key to files.
+Digital Ocean:: You can name your server.
+It sets up the server and provides an IP address.
+He starts PuTTY. (On mac or linux you can just use SSH.)
+PuTTY:: input the IP address. Select the user name (root).
+Add the private key. Name the session.
+Start it up....
+
+#1 Installing Node.js via package manager
+nodejs.org has the commands:
+$ curl ...
+$ sudo apt-get Update
+$ sudo apt-get install -y nodejs
+$ node -v
+#2 Install MongoDB Community Edtion on Ubuntu
+docs.mongodb.org
+https://docs.mongodb.com/manual/installation/#mongodb-community-edition-installation-tutorials
+  1. Import the public key used by the package management system
+  2. Create a list file for MongoDB
+  3. Reload local package database
+  4. Install the MongoDB package
+Then
+  1. Start MongoDB
+  2. Verify that MongoDB has started successfully
+#3 Clone the repository
+github.com
+Copy the clone command
+$ git --version
+$ git clone https://github.com/bradtraversy/nodekb.git
+[We are in the home directory and now it holds the project directory.]
+#4 Install nodemon
+$ cd nodekb
+$ npm install -g nodemon
+$ npm install
+$ nodemon
+#5 Test it in the browser
+http://[IPaddress]:3000
+You should see the Knowledgebase app in the browser,
+and the app should work.
+#6 Have the app running as a service.
+github.com/Unitech/pm2
+$ npm install pm2 -g
+$ pm2 start app.js
+Now it should be running in the background.
+#6 Modify app.js to listen on port 80, not 3000
+Install libcap2-bin
+$ pm2 stop app.js
+$ sudo app-get install libcap2-bin
+$ sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
+$ sudo vi app.js
+Change the 3000 to 80.
+$ pm2 start app.js
+#7 Test it in the browser
+http://[IPaddress]/
+You should see the Knowledgebase app in the browser,
+and the app should work.
+#8 set a Domainname for the IPaddress
+Digital Ocean:: Networking
+Traversy has registered domains on www.enomcentral.com
+In his account on enomcentral, he goes to DNS Server Settings
+He adds these three DNS servers:
+  ns1.digialocean.com
+  ns2.digialocean.com
+  ns3.digialocean.com
+"It might take a little while for the domain to propagate."
+Then you can go on Digital Ocean and Add Domain
+Then you add the DNS records.
+  A record:
+    hostname: @
+    will direct to: [Droplet server name]
+    TTL (seconds): 3600
+  CNAME record:
+    hostname: www
+    is an alias of: @
+    TTL (seconds): 43200
+#9 Test it in the browser
+http://[Domainname]/
+You should see the Knowledgebase app in the browser,
+and the app should work.
+#10 Comments
+You should not use root, so create a new user and use it instead.
