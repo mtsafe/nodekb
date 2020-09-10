@@ -8,14 +8,16 @@ or delete only their own articles.
 
 ## How to start
 SSH into your server.
-`# sudo systemctl start mongod
+```
+# sudo systemctl start mongod
 # npm run start
 
 > nodekb@1.0.0 start /root/nodekb
 > node app
 
 Server started on port 3000
-Connected to MongoDB`
+Connected to MongoDB
+```
 
 ## Tech Stack
 Node.js, Express.js, Pug, Passport, MongoDB, Mongoose, HTML, CSS, Javascript,
