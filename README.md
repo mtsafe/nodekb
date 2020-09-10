@@ -6,19 +6,6 @@ nodekb is able to have users login and authenticate. Users can then either
 browse submitted articles or add their own articles. Users can edit
 or delete only their own articles.
 
-## How to start
-SSH into your server.
-```
-# sudo systemctl start mongod
-# npm run start
-
-> nodekb@1.0.0 start /root/nodekb
-> node app
-
-Server started on port 3000
-Connected to MongoDB
-```
-
 ## Tech Stack
 Node.js, Express.js, Pug, Passport, MongoDB, Mongoose, HTML, CSS, Javascript,
 jQuery, Ajax
@@ -34,3 +21,18 @@ accomodates middleware.
 - Javascript is a programming language that is supported by browsers.
 - jQuery is a JavaScript library used to simplify JavaScript.
 - Ajax is used here to assist in implementing Delete for HTTP.
+
+
+## How to start the app after server installation and configuration
+SSH into your server.
+```
+# sudo systemctl start mongod
+# npm run start
+
+> nodekb@1.0.0 start /root/nodekb
+> node app
+
+Server started on port 3000
+Connected to MongoDB
+```
+You can now connect to the app with your browser.
