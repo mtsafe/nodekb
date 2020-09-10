@@ -1,5 +1,5 @@
 # nodekb
-A KnowledgeBase project on Node
+A KnowledgeBase demo project on Node
 
 ## Objective
 nodekb is able to have users login and authenticate. Users can then either
